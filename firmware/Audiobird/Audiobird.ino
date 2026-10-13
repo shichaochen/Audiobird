@@ -8,7 +8,7 @@
  * 硬件: ESP32-S3-WROOM-1 + INMP441 (I2S 麦克风, L/R 引脚接 GND) + MicroSD (SPI 模式)
  *
  * 工作流程 (每次上电 / 定时唤醒):
- *   1. 初始化 SD 卡, 读取 /CONFIG.TXT (若存在则覆盖默认配置)
+ *   1. 初始化 SD 卡, 扫描已有录音从最大序号续写 (断电后不重名), 读取 /CONFIG.TXT (若存在则覆盖默认配置)
  *   2. 初始化 I2S 麦克风, 按配置录制 RECORD_SECONDS 秒
  *   3. 保存为 /ABIRD_XXXX.WAV (16-bit PCM 单声道), 录音中 LED 闪烁
  *   4. 进入 deep sleep SLEEP_SECONDS 秒, 时间到自动唤醒重复
@@ -189,6 +189,35 @@ void blinkError() {
   }
 }
 
+/* ---------------- 断电续写: 从卡上已有最大序号继续 ----------------
+ * g_fileIndex 只存在 RTC 内存, 断电 / 换电池 / 复位后会清零。
+ * 启动时扫描卡上 ABIRD_XXXX.WAV, 从最大序号 +1 继续, 避免重名破坏旧录音。
+ * 须在 SD.begin 成功后调用。
+ */
+void resolveFileIndex() {
+  File root = SD.open("/");
+  if (!root) return;
+  uint32_t maxIdx = 0;
+  bool found = false;
+  while (true) {
+    File entry = root.openNextFile();
+    if (!entry) break;
+    if (!entry.isDirectory()) {
+      String name = String(entry.name());
+      int slash = name.lastIndexOf('/');  // ESP32 上 name() 可能带 "/" 前缀, 先取 basename
+      if (slash >= 0) name = name.substring(slash + 1);
+      if (name.startsWith("ABIRD_") && (name.endsWith(".WAV") || name.endsWith(".wav"))) {
+        uint32_t idx = (uint32_t)name.substring(6, 10).toInt();
+        if (!found || idx > maxIdx) { maxIdx = idx; found = true; }
+      }
+    }
+    entry.close();
+  }
+  root.close();
+  if (found) g_fileIndex = (maxIdx + 1) % 10000;
+  Serial.printf("[SD] 续写序号: %u\n", g_fileIndex);
+}
+
 void setup() {
   Serial.begin(115200);
   delay(500);
@@ -203,6 +232,8 @@ void setup() {
     goSleep(60);  // 1 分钟后重试
   }
   Serial.println("[SD] 初始化成功");
+
+  resolveFileIndex();  // 断电后从卡上最大序号继续, 避免重名
 
   loadConfig();
   Serial.printf("[CFG] 采样率=%uHz 录制=%u秒 休眠=%u秒 增益=%u\n",
