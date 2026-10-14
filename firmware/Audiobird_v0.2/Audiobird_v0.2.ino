@@ -206,6 +206,8 @@ void resolveFileIndex() {
     File f = dir.openNextFile();
     if (!f) break;
     String name = f.name();
+    int slash = name.lastIndexOf('/');  // ESP32 上 name() 可能带 "/" 前缀, 先取 basename
+    if (slash >= 0) name = name.substring(slash + 1);
     f.close();
     if (name.startsWith("ABIRD_") && name.endsWith(".WAV")) {
       uint32_t idx = name.substring(6, 10).toInt();
