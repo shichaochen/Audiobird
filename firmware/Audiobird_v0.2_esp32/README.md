@@ -7,6 +7,9 @@ DS3231 RTC（可选）、电池检测、断电续写。版本号 `0.2.0-esp32`�
 ## 开发板设置
 
 - Arduino IDE / arduino-cli 开发板：**ESP32 Dev Module**
+- **ESP32 Arduino Core 必须用 2.0.x（推荐 2.0.17）**：3.x 换了底层 IDF 5.x，ADC/I2S 驱动不兼容，
+  烧进去会在启动时报 `ADC: CONFLICT! driver_ng ...` 然后不断重启。
+  降级方法：Arduino IDE → 工具 → 开发板 → 开发板管理器 → 搜 esp32 → 版本选 2.0.17 → 安装
 - Flash：4MB（默认分区即可，固件约 850KB）
 - 上传失败时把上传速度降到 **115200**
 
