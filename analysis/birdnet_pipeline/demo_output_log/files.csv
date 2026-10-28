@@ -1,0 +1,5 @@
+file,status,duration_s,detections,species
+magpie_robin_16k_sim.wav,ok,27.1,7,Copsychus saularis (Oriental Magpie-Robin)
+magpie_robin_call_and_song.wav,ok,27.1,7,Copsychus saularis (Oriental Magpie-Robin)
+magpie_robin_song.ogg,ok,115.2,10,Copsychus saularis (Oriental Magpie-Robin); Pycnonotus jocosus (Red-whiskered Bulbul)
+shrike_call.wav,ok,16.1,5,Lanius schach (Long-tailed Shrike)
