@@ -1,0 +1,5 @@
+unix,datetime_utc,datetime_local,file,lat,lon,geo_sys,loc_name,sample_rate,record_seconds,battery_mv,gain
+1761443400,2026-10-25T23:30:00,2026-10-26T07:30:00,shrike_call.wav,31.258472,121.501236,WGS84,synthetic-test,44100,16,4100,4
+1761442500,2026-10-25T22:15:00,2026-10-26T06:15:00,magpie_robin_call_and_song.wav,31.258472,121.501236,WGS84,synthetic-test,48000,27,4100,4
+1761442800,2026-10-25T22:20:00,2026-10-26T06:20:00,magpie_robin_song.ogg,31.258472,121.501236,WGS84,synthetic-test,48000,60,4100,4
+1761443100,2026-10-25T22:25:00,2026-10-26T06:25:00,magpie_robin_16k_sim.wav,31.258472,121.501236,WGS84,synthetic-test,16000,27,4100,4
